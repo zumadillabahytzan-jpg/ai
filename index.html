@@ -184,6 +184,7 @@
       justify-content: center;
       text-align: center;
       padding: 80px 24px 60px;
+      overflow: hidden;
     }
 
     .hero-badge {
@@ -260,15 +261,19 @@
     .scroll-hint {
       position: absolute;
       bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
+      right: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       color: var(--text-lo);
       font-size: .72rem;
+      text-align: center;
       animation: fadeUp .7s .8s both;
+      width: max-content;
+      margin: 0 auto;
     }
 
     .scroll-hint .mouse {
@@ -375,11 +380,9 @@
       transform-style: preserve-3d;
     }
 
-    /* Hover only on desktop */
-    @media (hover: hover) {
-      .flip-card:hover .flip-card-inner {
-        transform: rotateY(180deg);
-      }
+    /* Flip controlled by JS for better hover zones */
+    .flip-card.is-flipped .flip-card-inner {
+      transform: rotateY(180deg);
     }
 
     .flip-front,
@@ -1161,7 +1164,7 @@ const aiTools = [
     },
     url: "https://www.magicschool.ai",
     category: "lesson",
-    youtubeEmbed: "https://youtu.be/p5QfyF9pkHU?list=RDk4xwmkOvIPI"
+    youtubeEmbed: "https://www.youtube.com/embed/ysz5S6PUM-U?rel=0&modestbranding=1"
   },
   // --- Тапсырмалар (Assignments) ---
   {
@@ -1423,6 +1426,10 @@ function renderCards(activeCategory) {
     }
 
     grid.appendChild(card);
+
+    if (!isMobile) {
+      setupDesktopCardHover(card);
+    }
   });
 
   // Re-observe new cards for scroll reveal
@@ -1435,7 +1442,78 @@ function getCategoryLabel(cat) {
 }
 
 function getToolVideoUrl(tool) {
-  return tool.youtubeEmbed || "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1";
+  const fallback = "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1";
+  const rawUrl = (tool.youtubeEmbed || tool.youtubeUrl || '').trim();
+  return normalizeYoutubeUrl(rawUrl) || fallback;
+}
+
+function normalizeYoutubeUrl(rawUrl) {
+  if (!rawUrl) return '';
+
+  const buildEmbed = (videoId) =>
+    videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : '';
+
+  // If only video id is provided
+  if (/^[a-zA-Z0-9_-]{11}$/.test(rawUrl)) {
+    return buildEmbed(rawUrl);
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+  } catch (_) {
+    try {
+      parsed = new URL(`https://${rawUrl}`);
+    } catch (__){
+      return '';
+    }
+  }
+
+  const host = parsed.hostname.replace('www.', '');
+  const path = parsed.pathname;
+
+  if (host === 'youtube.com' || host === 'm.youtube.com') {
+    if (path.startsWith('/embed/')) {
+      return rawUrl;
+    }
+
+    if (path === '/watch') {
+      return buildEmbed(parsed.searchParams.get('v'));
+    }
+
+    if (path.startsWith('/shorts/')) {
+      return buildEmbed(path.split('/')[2]);
+    }
+  }
+
+  if (host === 'youtu.be') {
+    return buildEmbed(path.replace('/', '').split('/')[0]);
+  }
+
+  return '';
+}
+
+function setupDesktopCardHover(card) {
+  const upperZoneRatio = 0.6; // only top 60% flips card
+  const videoEl = card.querySelector('.card-video-wrap');
+
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const cursorY = e.clientY - rect.top;
+    const inUpperZone = cursorY <= rect.height * upperZoneRatio;
+    const hoveringVideo = videoEl ? videoEl.matches(':hover') : false;
+    card.classList.toggle('is-flipped', inUpperZone && !hoveringVideo);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.classList.remove('is-flipped');
+  });
+
+  if (videoEl) {
+    videoEl.addEventListener('mouseenter', () => {
+      card.classList.remove('is-flipped');
+    });
+  }
 }
 
 /* ==============================================================
