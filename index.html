@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="kz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Teacher Hub</title>
+
+  <!-- Google Fonts: Roboto Slab -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+    ============================================================ */
+    :root {
+      --bg-deep:      #060b18;
+      --bg-card:      rgba(15, 22, 45, 0.72);
+      --bg-glass:     rgba(255, 255, 255, 0.04);
+      --border-glass: rgba(255, 255, 255, 0.10);
+      --primary:      #4f8ef7;
+      --primary-glow: rgba(79, 142, 247, 0.35);
+      --accent:       #a259ff;
+      --accent-glow:  rgba(162, 89, 255, 0.35);
+      --neon:         #00e5ff;
+      --text-hi:      #f0f4ff;
+      --text-mid:     #8b9ec7;
+      --text-lo:      #4a5a7a;
+      --radius-card:  18px;
+      --radius-btn:   50px;
+      --shadow-card:  0 8px 40px rgba(0,0,0,.45);
+      --trans-fast:   .18s ease;
+      --trans-med:    .35s ease;
+      --ff-display:   'Roboto Slab', serif;
+      --ff-body:      'Roboto Slab', serif;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--ff-body);
+      background: var(--bg-deep);
+      color: var(--text-hi);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+    /* ============================================================
+       UTILITY
+    ============================================================ */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .glow-text {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================================
+       CANVAS BACKGROUND
+    ============================================================ */
+    #neural-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 11, 24, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 14px 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 14px var(--primary-glow);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .logo-text h1 {
+      font-family: var(--ff-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1.1;
+    }
+
+    .logo-text p {
+      font-size: .68rem;
+      color: var(--text-mid);
+      white-space: nowrap;
+    }
+
+    /* Language switcher */
+    .lang-switcher {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-btn);
+      padding: 4px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-mid);
+      font-family: var(--ff-body);
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 5px 13px;
+      border-radius: var(--radius-btn);
+      transition: background var(--trans-fast), color var(--trans-fast);
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+    }
+
+    .lang-btn:hover:not(.active) {
+      color: var(--text-hi);
+      background: rgba(255,255,255,.06);
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(79,142,247,.12);
+      border: 1px solid rgba(79,142,247,.3);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 28px;
+      letter-spacing: .5px;
+      animation: fadeUp .7s .1s both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--neon);
+      box-shadow: 0 0 8px var(--neon);
+      animation: pulse 2s infinite;
+    }
+
+    .hero h2 {
+      font-family: var(--ff-display);
+      font-size: clamp(2.2rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      margin-bottom: 22px;
+      animation: fadeUp .7s .2s both;
+    }
+
+    .hero p.hero-sub {
+      font-size: clamp(.95rem, 2.2vw, 1.2rem);
+      color: var(--text-mid);
+      max-width: 580px;
+      margin: 0 auto 42px;
+      font-weight: 400;
+      animation: fadeUp .7s .3s both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 16px 38px;
+      font-family: var(--ff-display);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--trans-fast), box-shadow var(--trans-fast);
+      box-shadow: 0 0 30px var(--primary-glow), 0 0 60px rgba(162,89,255,.15);
+      animation: fadeUp .7s .4s both;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 50px var(--primary-glow), 0 0 90px rgba(162,89,255,.25);
+    }
+
+    .btn-primary svg { width: 18px; height: 18px; }
+
+    /* hero scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-lo);
+      font-size: .72rem;
+      animation: fadeUp .7s .8s both;
+    }
+
+    .scroll-hint .mouse {
+      width: 22px; height: 34px;
+      border: 2px solid var(--text-lo);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-hint .mouse::after {
+      content: '';
+      position: absolute;
+      top: 5px; left: 50%; transform: translateX(-50%);
+      width: 3px; height: 7px;
+      background: var(--primary);
+      border-radius: 2px;
+      animation: scrollDot 1.8s infinite;
+    }
+
+    /* ============================================================
+       SECTION COMMON
+    ============================================================ */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      font-family: var(--ff-display);
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--text-mid);
+      font-size: .95rem;
+      margin-bottom: 48px;
+    }
+
+    /* ============================================================
+       FILTER BUTTONS
+    ============================================================ */
+    .tools-section {
+      padding: 80px 0 100px;
+    }
+
+    .tools-header {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 52px;
+    }
+
+    /* ⚠️ ADD NEW CATEGORIES BY COPYING THIS BUTTON PATTERN */
+    .filter-btn {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-mid);
+      border-radius: var(--radius-btn);
+      padding: 9px 24px;
+      font-family: var(--ff-body);
+      font-size: .88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--trans-fast);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    /* ============================================================
+       AI CARDS GRID
+    ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 26px;
+    }
+
+    /* ---------- FLIP CARD ---------- */
+    .flip-card {
+      perspective: 1100px;
+      height: 360px;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .55s cubic-bezier(.4,.2,.2,1);
+      transform-style: preserve-3d;
+    }
+
+    /* Hover only on desktop */
+    @media (hover: hover) {
+      .flip-card:hover .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .flip-front,
+    .flip-back {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-card);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border: 1px solid var(--border-glass);
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-card);
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(145deg, rgba(79,142,247,.15), rgba(162,89,255,.15));
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    /* Card Front */
+    .card-logo-wrap {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 0 18px var(--primary-glow);
+      flex-shrink: 0;
+    }
+
+    .card-logo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .card-name {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: .84rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .card-category-tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: rgba(79,142,247,.1);
+      border-radius: 50px;
+      padding: 3px 12px;
+      align-self: flex-start;
+    }
+
+    .card-video-wrap {
+      position: relative;
+      width: 100%;
+      margin-top: 14px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 0 14px rgba(79,142,247,.2);
+      flex-shrink: 0;
+    }
+
+    .card-video-wrap::before {
+      content: '';
+      display: block;
+      padding-top: 56.25%;
+    }
+
+    .card-video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Card Back */
+    .back-title {
+      font-family: var(--ff-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .back-desc {
+      font-size: .82rem;
+      color: var(--text-mid);
+      text-align: center;
+    }
+
+    .btn-go {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 11px 30px;
+      font-family: var(--ff-display);
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--trans-fast), box-shadow var(--trans-fast);
+      box-shadow: 0 0 22px var(--primary-glow);
+    }
+
+    .btn-go:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 40px var(--primary-glow);
+    }
+
+    /* ============================================================
+       MOBILE CARD (no flip, button always visible)
+    ============================================================ */
+    @media (max-width: 768px) {
+      .flip-card { height: auto; perspective: none; }
+      .flip-card-inner { transform: none !important; transform-style: flat; position: static; }
+      .flip-front { position: static; backface-visibility: visible; }
+      .flip-back {
+        position: static;
+        transform: none;
+        backface-visibility: visible;
+        background: none;
+        padding-top: 0;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        align-items: flex-start;
+      }
+      .flip-front, .flip-back { border-radius: 0; box-shadow: none; border: none; background: none; padding: 0; }
+      .flip-card .flip-front { display: flex; }
+      /* merge into single card feel */
+      .flip-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        padding: 22px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    /* ============================================================
+       PROMPTS SLIDER
+    ============================================================ */
+    .prompts-section {
+      padding: 80px 0;
+    }
+
+    .prompts-header {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .slider-wrapper {
+      position: relative;
+    }
+
+    .slider-track-outer {
+      overflow: hidden;
+      border-radius: var(--radius-card);
+    }
+
+    .slider-track {
+      display: flex;
+      gap: 24px;
+      transition: transform .45s cubic-bezier(.4,.2,.2,1);
+      will-change: transform;
+    }
+
+    /* ⚠️ EACH PROMPT SLIDE — add new ones in JS array promptsData */
+    .prompt-slide {
+      flex: 0 0 calc(100% / 3 - 16px);
+      min-width: 300px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .prompt-slide { flex: 0 0 calc(100% - 0px); min-width: unset; }
+    }
+
+    .prompt-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .prompt-title {
+      font-family: var(--ff-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .prompt-text {
+      font-size: .84rem;
+      color: var(--text-mid);
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 10px;
+      padding: 14px;
+      flex: 1;
+      line-height: 1.6;
+    }
+
+    .btn-copy {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-hi);
+      border-radius: var(--radius-btn);
+      padding: 8px 20px;
+      font-family: var(--ff-body);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--trans-fast);
+    }
+
+    .btn-copy:hover {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-color: transparent;
+      box-shadow: 0 0 18px var(--primary-glow);
+    }
+
+    .btn-copy.copied {
+      background: rgba(0,229,255,.15);
+      border-color: var(--neon);
+      color: var(--neon);
+    }
+
+    .slider-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .slider-arrow {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-hi);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--trans-fast);
+    }
+
+    .slider-arrow:hover {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-color: transparent;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .slider-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .slider-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-lo);
+      cursor: pointer;
+      transition: all var(--trans-fast);
+    }
+
+    .slider-dot.active {
+      background: var(--primary);
+      width: 22px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    /* ============================================================
+       SAFETY SECTION
+    ============================================================ */
+    .safety-section {
+      padding: 80px 0;
+    }
+
+    .safety-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 26px;
+    }
+
+    .safety-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 36px 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+      transition: transform var(--trans-med), box-shadow var(--trans-med);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .safety-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, var(--primary-glow), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--trans-med);
+    }
+
+    .safety-card:hover { transform: translateY(-6px); box-shadow: 0 16px 60px rgba(0,0,0,.55); }
+    .safety-card:hover::before { opacity: 1; }
+
+    .safety-icon {
+      width: 58px; height: 58px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .safety-icon.blue  { background: rgba(79,142,247,.15);  box-shadow: 0 0 24px var(--primary-glow); }
+    .safety-icon.purple{ background: rgba(162,89,255,.15);  box-shadow: 0 0 24px var(--accent-glow); }
+    .safety-icon.teal  { background: rgba(0,229,255,.10);   box-shadow: 0 0 24px rgba(0,229,255,.2); }
+
+    .safety-card h3 {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+
+    .safety-card p {
+      font-size: .88rem;
+      color: var(--text-mid);
+      position: relative; z-index: 1;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border-glass);
+      padding: 36px 0;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    footer p {
+      font-size: .8rem;
+      color: var(--text-lo);
+    }
+
+    footer .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin-top: 14px;
+      font-size: .82rem;
+      color: var(--text-mid);
+    }
+
+    footer .footer-links a:hover { color: var(--primary); }
+
+    /* ============================================================
+       TOAST NOTIFICATION
+    ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 50px;
+      font-family: var(--ff-body);
+      font-size: .88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .35s cubic-bezier(.4,.2,.2,1);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .4; }
+    }
+
+    @keyframes scrollDot {
+      0%   { top: 5px; opacity: 1; }
+      80%  { top: 18px; opacity: 0; }
+      100% { top: 5px; opacity: 0; }
+    }
+
+    /* Intersection observer reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 600px) {
+      .logo-text p { display: none; }
+      .hero { min-height: 85vh; padding: 60px 20px 50px; }
+      .hero h2 { letter-spacing: -1px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .safety-grid  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     CANVAS BACKGROUND (Neural particle network)
+================================================================ -->
+<canvas id="neural-canvas"></canvas>
+
+<!-- ================================================================
+     HEADER
+================================================================ -->
+<header>
+  <div class="container header-inner">
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <!-- Temporary logo from public source. Replace src with your own logo -->
+      <img
+        class="logo-img"
+        src="logo.png"
+        alt="AI Teacher Hub Logo"
+      />
+      <div class="logo-text">
+        <h1 class="glow-text">AI Teacher Hub</h1>
+        <p data-i18n="header_sub">Мұғалімдерге арналған ЖИ каталогы</p>
+      </div>
+    </div>
+
+    <!-- LANGUAGE SWITCHER -->
+    <div class="lang-switcher" role="group" aria-label="Language">
+      <button class="lang-btn active" data-lang="kz">KZ</button>
+      <button class="lang-btn"        data-lang="ru">RU</button>
+      <button class="lang-btn"        data-lang="en">EN</button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ================================================================
+     HERO
+================================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-badge" data-i18n="hero_badge">🚀 Мұғалімдер үшін жасалған</div>
+
+  <h2>
+    <span class="glow-text" data-i18n="hero_h1">Жасанды Интеллект —</span><br>
+    <span data-i18n="hero_h2">Мұғалімнің көмекшісі</span>
+  </h2>
+
+  <p class="hero-sub" data-i18n="hero_sub">
+    Сабақты жоспарлаңыз, тапсырмалар жасаңыз және оқушыларды шабыттандырыңыз — ЖИ құралдарымен.
+  </p>
+
+  <a href="#tools" class="btn-primary">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </svg>
+    <span data-i18n="hero_btn">Бастау</span>
+  </a>
+
+  <div class="scroll-hint">
+    <div class="mouse"></div>
+    <span data-i18n="scroll_hint">Төмен қараңыз</span>
+  </div>
+</section>
+
+<!-- ================================================================
+     AI TOOLS SECTION
+================================================================ -->
+<section class="tools-section" id="tools">
+  <div class="container">
+
+    <div class="tools-header reveal">
+      <h2 class="section-title" data-i18n="tools_title">ЖИ Құралдары</h2>
+      <p class="section-sub" data-i18n="tools_sub">Категория бойынша сүзгіден өткізіңіз</p>
+    </div>
+
+    <!-- FILTER BAR
+         ⚠️ TO ADD A NEW CATEGORY:
+         1. Copy one <button> below
+         2. Change data-category="your-category"
+         3. Add the same category key to aiTools array in JS
+    -->
+    <div class="filter-bar reveal" id="filter-bar">
+      <button class="filter-btn active" data-category="all"     data-i18n="cat_all">Барлығы</button>
+      <button class="filter-btn"        data-category="lesson"  data-i18n="cat_lesson">Сабақ жоспары</button>
+      <button class="filter-btn"        data-category="assign"  data-i18n="cat_assign">Тапсырмалар</button>
+      <button class="filter-btn"        data-category="visual"  data-i18n="cat_visual">Көрнекілік</button>
+    </div>
+
+    <!-- Cards rendered by JS -->
+    <div class="cards-grid" id="cards-grid"></div>
+
+  </div>
+</section>
+
+<!-- ================================================================
+     PROMPTS SLIDER
+================================================================ -->
+<section class="prompts-section" id="prompts">
+  <div class="container">
+
+    <div class="prompts-header reveal">
+      <h2 class="section-title" data-i18n="prompts_title">Танымал промпттар</h2>
+      <p class="section-sub" data-i18n="prompts_sub">Дайын промпттарды көшіріп, ChatGPT-ке қойыңыз</p>
+    </div>
+
+    <div class="slider-wrapper reveal">
+      <div class="slider-track-outer">
+        <div class="slider-track" id="slider-track">
+          <!-- Slides rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="slider-controls">
+        <button class="slider-arrow" id="prev-btn" aria-label="Previous">&#8592;</button>
+        <div class="slider-dots" id="slider-dots"></div>
+        <button class="slider-arrow" id="next-btn" aria-label="Next">&#8594;</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================
+     SAFETY SECTION
+================================================================ -->
+<section class="safety-section" id="safety">
+  <div class="container">
+    <div class="safety-header reveal">
+      <h2 class="section-title" data-i18n="safety_title">🛡️ Қауіпсіздік ережелері</h2>
+      <p class="section-sub" data-i18n="safety_sub">ЖИ-ді дұрыс қолданыңыз</p>
+    </div>
+    <div class="safety-grid" id="safety-grid"></div>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+================================================================ -->
+<footer>
+  <div class="container">
+    <div class="footer-logo glow-text">AI Teacher Hub</div>
+    <p data-i18n="footer_copy">© 2024 — Барлық мұғалімдерге арналған</p>
+    <div class="footer-links">
+      <a href="#hero"   data-i18n="footer_home">Басты бет</a>
+      <a href="#tools"  data-i18n="footer_tools">Құралдар</a>
+      <a href="#prompts"data-i18n="footer_prompts">Промпттар</a>
+      <a href="#safety" data-i18n="footer_safety">Қауіпсіздік</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+/* ==============================================================
+   1. TRANSLATIONS
+   ⚠️ Edit all UI text here for 3 languages
+============================================================== */
+const translations = {
+  kz: {
+    header_sub:      "Мұғалімдерге арналған ЖИ каталогы",
+    hero_badge:      "🚀 Мұғалімдер үшін жасалған",
+    hero_h1:         "Жасанды Интеллект —",
+    hero_h2:         "Мұғалімнің көмекшісі",
+    hero_sub:        "Сабақты жоспарлаңыз, тапсырмалар жасаңыз және оқушыларды шабыттандырыңыз — ЖИ құралдарымен.",
+    hero_btn:        "Бастау",
+    scroll_hint:     "Төмен қараңыз",
+    tools_title:     "ЖИ Құралдары",
+    tools_sub:       "Категория бойынша сүзгіден өткізіңіз",
+    cat_all:         "Барлығы",
+    cat_lesson:      "Сабақ жоспары",
+    cat_assign:      "Тапсырмалар",
+    cat_visual:      "Көрнекілік",
+    go_btn:          "Өту",
+    yt_title:        "Қалай қолдануға болады",
+    yt_sub:          "Бейне нұсқаулықты қараңыз",
+    prompts_title:   "Танымал промпттар",
+    prompts_sub:     "Дайын промпттарды көшіріп, ChatGPT-ке қойыңыз",
+    copy_btn:        "Көшіру",
+    copied_btn:      "Көшірілді ✓",
+    toast_copied:    "Промпт көшірілді!",
+    safety_title:    "🛡️ Қауіпсіздік ережелері",
+    safety_sub:      "ЖИ-ді дұрыс қолданыңыз",
+    footer_copy:     "© 2024 — Барлық мұғалімдерге арналған",
+    footer_home:     "Басты бет",
+    footer_tools:    "Құралдар",
+    footer_prompts:  "Промпттар",
+    footer_safety:   "Қауіпсіздік",
+    // Safety card titles and descriptions (also edit safetyCards below)
+  },
+  ru: {
+    header_sub:      "Каталог ИИ-инструментов для учителей",
+    hero_badge:      "🚀 Создано для учителей",
+    hero_h1:         "Искусственный Интеллект —",
+    hero_h2:         "Помощник учителя",
+    hero_sub:        "Планируйте уроки, создавайте задания и вдохновляйте учеников — с помощью ИИ-инструментов.",
+    hero_btn:        "Начать",
+    scroll_hint:     "Прокрутите вниз",
+    tools_title:     "ИИ-инструменты",
+    tools_sub:       "Фильтруйте по категориям",
+    cat_all:         "Все",
+    cat_lesson:      "Планирование урока",
+    cat_assign:      "Задания",
+    cat_visual:      "Визуализация",
+    go_btn:          "Перейти",
+    yt_title:        "Как использовать",
+    yt_sub:          "Смотрите видео-инструкцию",
+    prompts_title:   "Популярные промпты",
+    prompts_sub:     "Скопируйте готовые промпты и вставьте в ChatGPT",
+    copy_btn:        "Копировать",
+    copied_btn:      "Скопировано ✓",
+    toast_copied:    "Промпт скопирован!",
+    safety_title:    "🛡️ Правила безопасности",
+    safety_sub:      "Используйте ИИ правильно",
+    footer_copy:     "© 2024 — Для всех учителей",
+    footer_home:     "Главная",
+    footer_tools:    "Инструменты",
+    footer_prompts:  "Промпты",
+    footer_safety:   "Безопасность",
+  },
+  en: {
+    header_sub:      "AI Tools Catalog for Teachers",
+    hero_badge:      "🚀 Built for Teachers",
+    hero_h1:         "Artificial Intelligence —",
+    hero_h2:         "Your Teaching Assistant",
+    hero_sub:        "Plan lessons, create assignments and inspire students — powered by AI tools.",
+    hero_btn:        "Get Started",
+    scroll_hint:     "Scroll down",
+    tools_title:     "AI Tools",
+    tools_sub:       "Filter by category",
+    cat_all:         "All",
+    cat_lesson:      "Lesson Planning",
+    cat_assign:      "Assignments",
+    cat_visual:      "Visual Aids",
+    go_btn:          "Visit",
+    yt_title:        "How to Use",
+    yt_sub:          "Watch the tutorial video",
+    prompts_title:   "Popular Prompts",
+    prompts_sub:     "Copy ready-made prompts and paste into ChatGPT",
+    copy_btn:        "Copy",
+    copied_btn:      "Copied ✓",
+    toast_copied:    "Prompt copied!",
+    safety_title:    "🛡️ Safety Guidelines",
+    safety_sub:      "Use AI responsibly",
+    footer_copy:     "© 2024 — For All Teachers",
+    footer_home:     "Home",
+    footer_tools:    "Tools",
+    footer_prompts:  "Prompts",
+    footer_safety:   "Safety",
+  }
+};
+
+/* ==============================================================
+   2. AI TOOLS DATA
+   ⚠️ TO ADD A NEW AI TOOL — copy one object below and fill in:
+  { name, logo, desc: {kz,ru,en}, longDesc: {kz,ru,en}, url, category, youtubeEmbed }
+   Category must match a filter-btn data-category value.
+============================================================== */
+const aiTools = [
+  // --- Сабақ жоспары (Lesson Planning) ---
+  {
+    name: "ChatGPT",
+    logo: "https://img.icons8.com/fluency/96/chatgpt.png",
+    desc: {
+      kz: "Сабақ жоспарлауға арналған ең танымал ЖИ",
+      ru: "Самый популярный ИИ для планирования уроков",
+      en: "Most popular AI for lesson planning"
+    },
+    longDesc: {
+      kz: "Кез келген тақырып бойынша сабақ жоспары, тест, тапсырмалар жасайды",
+      ru: "Создаёт планы уроков, тесты и задания по любой теме",
+      en: "Creates lesson plans, tests and tasks on any topic"
+    },
+    url: "https://chat.openai.com",
+    category: "lesson",
+    youtubeEmbed: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
+  },
+  {
+    name: "MagicSchool AI",
+    logo: "https://img.icons8.com/fluency/96/wizard.png",
+    desc: {
+      kz: "Мұғалімдерге арнайы жасалған ЖИ платформасы",
+      ru: "ИИ-платформа специально для учителей",
+      en: "AI platform built specifically for teachers"
+    },
+    longDesc: {
+      kz: "60+ мұғалімдік құрал: дифференциациядан бастап байланыстарға дейін",
+      ru: "60+ инструментов: от дифференциации до коммуникации",
+      en: "60+ teacher tools from differentiation to communication"
+    },
+    url: "https://www.magicschool.ai",
+    category: "lesson",
+    youtubeEmbed: "https://www.youtube.com/embed/ysz5S6PUM-U?rel=0&modestbranding=1"
+  },
+  // --- Тапсырмалар (Assignments) ---
+  {
+    name: "Quillbot",
+    logo: "https://img.icons8.com/fluency/96/quill-with-ink.png",
+    desc: {
+      kz: "Мәтінді қайта жазу және грамматиканы тексеру",
+      ru: "Перефразирование и проверка грамматики",
+      en: "Paraphrasing and grammar checking"
+    },
+    longDesc: {
+      kz: "Мұғалімдер тапсырмалар мен хаттарды тез жетілдіре алады",
+      ru: "Учителя могут быстро улучшить задания и письма",
+      en: "Teachers can quickly improve assignments and letters"
+    },
+    url: "https://quillbot.com",
+    category: "assign",
+    youtubeEmbed: "https://www.youtube.com/embed/aqz-KE-bpKQ?rel=0&modestbranding=1"
+  },
+  {
+    name: "QuestionWell",
+    logo: "https://img.icons8.com/fluency/96/question-mark.png",
+    desc: {
+      kz: "Кез келген мәтіннен автоматты сұрақтар жасайды",
+      ru: "Автоматически создаёт вопросы из любого текста",
+      en: "Automatically generates questions from any text"
+    },
+    longDesc: {
+      kz: "PDF немесе мәтін жүктеп, дайын тест сұрақтарын алыңыз",
+      ru: "Загрузите PDF или текст и получите готовые вопросы теста",
+      en: "Upload PDF or text and get ready test questions"
+    },
+    url: "https://questionwell.org",
+    category: "assign",
+    youtubeEmbed: "https://www.youtube.com/embed/jNQXAC9IVRw?rel=0&modestbranding=1"
+  },
+  // --- Көрнекілік (Visual Aids) ---
+  {
+    name: "Canva AI",
+    logo: "https://img.icons8.com/fluency/96/canva.png",
+    desc: {
+      kz: "ЖИ-мен кәсіби слайдтар мен инфографикалар",
+      ru: "Профессиональные слайды и инфографика с ИИ",
+      en: "Professional slides and infographics with AI"
+    },
+    longDesc: {
+      kz: "Magic Design арқылы секундтарда презентация жасаңыз",
+      ru: "Создайте презентацию за секунды с Magic Design",
+      en: "Create presentations in seconds with Magic Design"
+    },
+    url: "https://www.canva.com",
+    category: "visual",
+    youtubeEmbed: "https://www.youtube.com/embed/ScMzIvxBSi4?rel=0&modestbranding=1"
+  },
+  {
+    name: "Tome AI",
+    logo: "https://img.icons8.com/fluency/96/book.png",
+    desc: {
+      kz: "ЖИ-мен автоматты презентация жасаушы",
+      ru: "Автоматический создатель презентаций с ИИ",
+      en: "AI-powered automatic presentation creator"
+    },
+    longDesc: {
+      kz: "Тақырып беріңіз, Tome толық презентация жасайды",
+      ru: "Задайте тему — Tome создаст полную презентацию",
+      en: "Give a topic and Tome builds a full presentation"
+    },
+    url: "https://tome.app",
+    category: "visual",
+    youtubeEmbed: "https://www.youtube.com/embed/M7lc1UVf-VE?rel=0&modestbranding=1"
+  }
+];
+
+/* ==============================================================
+   3. PROMPTS DATA
+   ⚠️ TO ADD A NEW PROMPT — copy one object below and fill in:
+   { title: {kz,ru,en}, text: {kz,ru,en} }
+============================================================== */
+const promptsData = [
+  {
+    title: { kz: "Сабақ жоспары", ru: "План урока", en: "Lesson Plan" },
+    text: {
+      kz: "Мен 7-сынып математика мұғаліміміемін. «Теңдеулер» тақырыбына 45 минуттық сабақ жоспарын жаз. Мақсаттар, кіріспе, негізгі бөлім, бекіту және үй тапсырмасы болсын.",
+      ru: "Я учитель математики 7 класса. Напиши план урока на 45 минут на тему «Уравнения». Включи: цели, вводную часть, основную часть, закрепление и домашнее задание.",
+      en: "I am a 7th grade math teacher. Write a 45-minute lesson plan on the topic 'Equations'. Include: objectives, intro, main part, practice and homework."
+    }
+  },
+  {
+    title: { kz: "Тест сұрақтары", ru: "Вопросы теста", en: "Quiz Questions" },
+    text: {
+      kz: "«Фотосинтез» тақырыбы бойынша 10 тест сұрағы жаз. 4 жауап нұсқасы болсын, дұрысы белгіленсін. 5-сынып деңгейіне сай болсын.",
+      ru: "Напиши 10 тестовых вопросов по теме «Фотосинтез» с 4 вариантами ответов, отметь правильный. Уровень — 5 класс.",
+      en: "Write 10 quiz questions on the topic 'Photosynthesis' with 4 answer choices, mark the correct one. Level — 5th grade."
+    }
+  },
+  {
+    title: { kz: "Бағалау критерийлері", ru: "Критерии оценки", en: "Rubric Generator" },
+    text: {
+      kz: "Оқушының жазба жұмысын бағалауға арналған критерий кестесін жаса. 4 бағыт: Мазмұн, Тіл, Логика, Безендіру. Әр бағытта 4 деңгей болсын (1-4 балл).",
+      ru: "Создай таблицу критериев для оценки письменной работы. 4 критерия: Содержание, Язык, Логика, Оформление. В каждом критерии 4 уровня (1-4 балла).",
+      en: "Create a rubric table for evaluating written work. 4 criteria: Content, Language, Logic, Presentation. Each with 4 levels (1-4 points)."
+    }
+  },
+  {
+    title: { kz: "Шығармашылық тапсырма", ru: "Творческое задание", en: "Creative Task" },
+    text: {
+      kz: "8-сынып тарих пәні үшін шығармашылық жоба тапсырмасын ойлап тап. Тақырып: «Қазақстанның тәуелсіздігі». Нәтиже: постер, видео немесе презентация.",
+      ru: "Придумай задание на творческий проект для 8 класса по истории. Тема: «Независимость Казахстана». Форматы: постер, видео или презентация.",
+      en: "Create a creative project task for 8th grade history class. Topic: 'Independence of Kazakhstan'. Formats: poster, video or presentation."
+    }
+  },
+  {
+    title: { kz: "Ата-аналарға хат", ru: "Письмо родителям", en: "Parent Letter" },
+    text: {
+      kz: "Ата-аналарға мектепте ЖИ-ді оқу мақсатында қолданатынымыз туралы хат жаз. Достық, кәсіби тонда болсын. 3 абзацтан тұрсын.",
+      ru: "Напиши письмо родителям о том, что в школе используют ИИ в учебных целях. Дружелюбный и профессиональный тон. 3 абзаца.",
+      en: "Write a parent letter explaining that the school uses AI for educational purposes. Friendly and professional tone. 3 paragraphs."
+    }
+  }
+];
+
+/* ==============================================================
+   4. SAFETY CARDS DATA
+   ⚠️ Edit titles and descriptions in 3 languages
+============================================================== */
+const safetyCards = [
+  {
+    icon: "🔒",
+    iconClass: "blue",
+    title: { kz: "Деректерді жасырыңыз",    ru: "Скрывайте данные",       en: "Protect Private Data" },
+    desc:  { kz: "ЖИ-ге оқушылардың толық аты-жөнін, мекен-жайын және жеке ақпаратын енгізбеңіз.",
+             ru: "Не вводите в ИИ полные имена учеников, адреса и личные данные.",
+             en: "Do not enter students' full names, addresses or personal information into AI." }
+  },
+  {
+    icon: "🔍",
+    iconClass: "purple",
+    title: { kz: "Фактілерді тексеріңіз",   ru: "Проверяйте факты",       en: "Verify the Facts" },
+    desc:  { kz: "ЖИ қате ақпарат бере алады. Маңызды мазмұнды әрдайым басқа деректермен салыстырып тексеріңіз.",
+             ru: "ИИ может давать неверную информацию. Всегда проверяйте важный контент в других источниках.",
+             en: "AI can provide inaccurate information. Always verify important content with other sources." }
+  },
+  {
+    icon: "✍️",
+    iconClass: "teal",
+    title: { kz: "Өз идеяларыңызды қосыңыз", ru: "Добавляйте свои идеи",  en: "Add Your Own Ideas" },
+    desc:  { kz: "ЖИ — көмекші, ал автор — сіз. ЖИ шығарған мазмұнды өңдеп, өз тәжірибеңізді қосыңыз.",
+             ru: "ИИ — помощник, а автор — вы. Редактируйте контент ИИ и добавляйте свой опыт.",
+             en: "AI is an assistant, you are the author. Edit AI content and add your own expertise." }
+  }
+];
+
+/* ==============================================================
+   5. LANGUAGE SYSTEM
+============================================================== */
+let currentLang = 'kz';
+
+function applyTranslations(lang) {
+  currentLang = lang;
+  // Update all elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  // Active lang button
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Re-render dynamic sections
+  renderCards('all');
+  renderSlider();
+  renderSafety();
+}
+
+/* ==============================================================
+   6. RENDER AI CARDS
+============================================================== */
+function renderCards(activeCategory) {
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  const isMobile = window.innerWidth <= 768;
+
+  aiTools.forEach(tool => {
+    if (activeCategory !== 'all' && tool.category !== activeCategory) return;
+
+    const card = document.createElement('div');
+    card.className = 'flip-card reveal';
+    card.dataset.category = tool.category;
+
+    if (isMobile) {
+      /* --- MOBILE: no flip, button visible immediately --- */
+      card.innerHTML = `
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div class="card-logo-wrap">
+              <img src="${tool.logo}" alt="${tool.name}" loading="lazy" />
+            </div>
+            <div class="card-name">${tool.name}</div>
+            <p class="card-desc">${tool.desc[currentLang]}</p>
+            <span class="card-category-tag">${getCategoryLabel(tool.category)}</span>
+            <div class="card-video-wrap">
+              <iframe
+                src="${getToolVideoUrl(tool)}"
+                title="${tool.name} video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+          <div class="flip-back">
+            <a href="${tool.url}" target="_blank" rel="noopener" class="btn-go">
+              ${translations[currentLang].go_btn}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      `;
+    } else {
+      /* --- DESKTOP: flip animation --- */
+      card.innerHTML = `
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div class="card-logo-wrap">
+              <img src="${tool.logo}" alt="${tool.name}" loading="lazy" />
+            </div>
+            <div class="card-name">${tool.name}</div>
+            <p class="card-desc">${tool.desc[currentLang]}</p>
+            <span class="card-category-tag">${getCategoryLabel(tool.category)}</span>
+            <div class="card-video-wrap">
+              <iframe
+                src="${getToolVideoUrl(tool)}"
+                title="${tool.name} video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+          <div class="flip-back">
+            <div class="back-title">${tool.name}</div>
+            <p class="back-desc">${tool.longDesc[currentLang]}</p>
+            <a href="${tool.url}" target="_blank" rel="noopener" class="btn-go">
+              ${translations[currentLang].go_btn}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    grid.appendChild(card);
+  });
+
+  // Re-observe new cards for scroll reveal
+  observeReveal();
+}
+
+function getCategoryLabel(cat) {
+  const map = { lesson: 'cat_lesson', assign: 'cat_assign', visual: 'cat_visual' };
+  return translations[currentLang][map[cat]] || cat;
+}
+
+function getToolVideoUrl(tool) {
+  return tool.youtubeEmbed || "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1";
+}
+
+/* ==============================================================
+   7. FILTER BUTTONS
+============================================================== */
+document.getElementById('filter-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(btn.dataset.category);
+});
+
+/* ==============================================================
+   8. PROMPTS SLIDER
+============================================================== */
+let sliderIndex = 0;
+let autoInterval = null;
+
+function getSlidesPerView() {
+  return window.innerWidth >= 900 ? 3 : 1;
+}
+
+function renderSlider() {
+  const track = document.getElementById('slider-track');
+  const dotsEl = document.getElementById('slider-dots');
+  track.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  promptsData.forEach((p, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'prompt-slide';
+    slide.innerHTML = `
+      <div class="prompt-label">PROMPT ${i + 1}</div>
+      <div class="prompt-title">${p.title[currentLang]}</div>
+      <div class="prompt-text" id="prompt-text-${i}">${p.text[currentLang]}</div>
+      <button class="btn-copy" onclick="copyPrompt(this, ${i})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        ${translations[currentLang].copy_btn}
+      </button>
+    `;
+    track.appendChild(slide);
+
+    const dot = document.createElement('div');
+    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsEl.appendChild(dot);
+  });
+
+  sliderIndex = 0;
+  updateSlider();
+  startAutoplay();
+}
+
+function updateSlider() {
+  const track = document.getElementById('slider-track');
+  const spv = getSlidesPerView();
+  const slideW = track.parentElement.offsetWidth;
+  const slideUnit = slideW / spv;
+  track.style.transform = `translateX(-${sliderIndex * slideUnit}px)`;
+
+  document.querySelectorAll('.slider-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === sliderIndex);
+  });
+}
+
+function goToSlide(idx) {
+  const maxIdx = promptsData.length - getSlidesPerView();
+  sliderIndex = Math.max(0, Math.min(idx, maxIdx));
+  updateSlider();
+}
+
+document.getElementById('prev-btn').addEventListener('click', () => {
+  goToSlide(sliderIndex - 1);
+  resetAutoplay();
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  goToSlide(sliderIndex + 1);
+  resetAutoplay();
+});
+
+function startAutoplay() {
+  clearInterval(autoInterval);
+  autoInterval = setInterval(() => {
+    const maxIdx = promptsData.length - getSlidesPerView();
+    sliderIndex = sliderIndex >= maxIdx ? 0 : sliderIndex + 1;
+    updateSlider();
+  }, 5000);
+}
+
+function resetAutoplay() { startAutoplay(); }
+
+window.addEventListener('resize', () => {
+  updateSlider();
+  renderCards(document.querySelector('.filter-btn.active')?.dataset.category || 'all');
+});
+
+/* Copy to clipboard */
+function copyPrompt(btn, idx) {
+  const text = promptsData[idx].text[currentLang];
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = translations[currentLang].copied_btn;
+    btn.classList.add('copied');
+    showToast(translations[currentLang].toast_copied);
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg> ${translations[currentLang].copy_btn}`;
+      btn.classList.remove('copied');
+    }, 2200);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+/* ==============================================================
+   9. SAFETY CARDS RENDER
+============================================================== */
+function renderSafety() {
+  const grid = document.getElementById('safety-grid');
+  grid.innerHTML = '';
+  safetyCards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'safety-card reveal';
+    el.innerHTML = `
+      <div class="safety-icon ${card.iconClass}">${card.icon}</div>
+      <h3>${card.title[currentLang]}</h3>
+      <p>${card.desc[currentLang]}</p>
+    `;
+    grid.appendChild(el);
+  });
+  observeReveal();
+}
+
+/* ==============================================================
+   10. LANGUAGE SWITCHER EVENT
+============================================================== */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyTranslations(btn.dataset.lang));
+});
+
+/* ==============================================================
+   11. INTERSECTION OBSERVER (Scroll Reveal)
+============================================================== */
+function observeReveal() {
+  const items = document.querySelectorAll('.reveal:not(.visible)');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 70);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  items.forEach(el => obs.observe(el));
+}
+
+/* ==============================================================
+   12. CANVAS — NEURAL PARTICLE NETWORK
+============================================================== */
+(function initCanvas() {
+  const canvas = document.getElementById('neural-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let W, H, particles;
+  const PARTICLE_COUNT = 70;
+  const MAX_DIST = 160;
+  const COLORS = ['#4f8ef7', '#a259ff', '#00e5ff'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function randomColor() {
+    return COLORS[Math.floor(Math.random() * COLORS.length)];
+  }
+
+  function createParticles() {
+    particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x:  Math.random() * W,
+      y:  Math.random() * H,
+      vx: (Math.random() - .5) * .55,
+      vy: (Math.random() - .5) * .55,
+      r:  Math.random() * 2 + 1,
+      color: randomColor()
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Update & draw particles
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = .7;
+      ctx.fill();
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          const alpha = (1 - dist / MAX_DIST) * .3;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = particles[i].color;
+          ctx.globalAlpha = alpha;
+          ctx.lineWidth = .8;
+          ctx.stroke();
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+  resize();
+  createParticles();
+  draw();
+})();
+
+/* ==============================================================
+   13. INIT
+============================================================== */
+(function init() {
+  applyTranslations('kz');
+  observeReveal();
+})();
+</script>
+</body>
+</html>
