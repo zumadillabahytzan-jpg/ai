@@ -15,12 +15,12 @@
        CSS CUSTOM PROPERTIES (DESIGN TOKENS)
     ============================================================ */
     :root {
-      --bg-deep:      #060b18;
+      --bg-deep:      #071a45;
       --bg-card:      rgba(15, 22, 45, 0.72);
       --bg-glass:     rgba(255, 255, 255, 0.04);
       --border-glass: rgba(255, 255, 255, 0.10);
-      --primary:      #4f8ef7;
-      --primary-glow: rgba(79, 142, 247, 0.35);
+      --primary:      #2f8cff;
+      --primary-glow: rgba(47, 140, 255, 0.42);
       --accent:       #a259ff;
       --accent-glow:  rgba(162, 89, 255, 0.35);
       --neon:         #00e5ff;
@@ -94,7 +94,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(6, 11, 24, 0.78);
+      background: rgba(7, 26, 69, 0.82);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border-glass);
@@ -102,9 +102,9 @@
     }
 
     .header-inner {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      justify-content: space-between;
       gap: 16px;
     }
 
@@ -112,6 +112,15 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .header-center-text {
+      justify-self: center;
+      text-align: center;
+      font-size: .86rem;
+      color: var(--text-mid);
+      font-weight: 600;
+      letter-spacing: .2px;
     }
 
     .logo-img {
@@ -133,9 +142,11 @@
     }
 
     .logo-text p {
-      font-size: .68rem;
+      font-size: .66rem;
       color: var(--text-mid);
-      white-space: nowrap;
+      white-space: pre-line;
+      max-width: 330px;
+      line-height: 1.35;
     }
 
     /* Language switcher */
@@ -146,6 +157,7 @@
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-btn);
       padding: 4px;
+      justify-self: end;
     }
 
     .lang-btn {
@@ -191,11 +203,11 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(79,142,247,.12);
-      border: 1px solid rgba(79,142,247,.3);
+      background: rgba(47,140,255,.16);
+      border: 1px solid rgba(47,140,255,.38);
       border-radius: 50px;
       padding: 6px 18px;
-      font-size: .78rem;
+      font-size: 15px;
       font-weight: 600;
       color: var(--primary);
       margin-bottom: 28px;
@@ -311,7 +323,7 @@
 
     .section-sub {
       color: var(--text-mid);
-      font-size: .95rem;
+      font-size: 20px;
       margin-bottom: 48px;
     }
 
@@ -404,7 +416,7 @@
 
     .flip-back {
       transform: rotateY(180deg);
-      background: linear-gradient(145deg, rgba(79,142,247,.15), rgba(162,89,255,.15));
+      background: linear-gradient(145deg, rgba(47,140,255,.18), rgba(162,89,255,.15));
       align-items: center;
       justify-content: center;
       gap: 18px;
@@ -446,7 +458,7 @@
       font-size: .72rem;
       font-weight: 600;
       color: var(--primary);
-      background: rgba(79,142,247,.1);
+      background: rgba(47,140,255,.14);
       border-radius: 50px;
       padding: 3px 12px;
       align-self: flex-start;
@@ -459,7 +471,7 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border-glass);
-      box-shadow: 0 0 14px rgba(79,142,247,.2);
+      box-shadow: 0 0 14px rgba(47,140,255,.28);
       flex-shrink: 0;
     }
 
@@ -746,13 +758,13 @@
       z-index: 1;
     }
 
-    .safety-icon.blue  { background: rgba(79,142,247,.15);  box-shadow: 0 0 24px var(--primary-glow); }
+    .safety-icon.blue  { background: rgba(47,140,255,.18);  box-shadow: 0 0 24px var(--primary-glow); }
     .safety-icon.purple{ background: rgba(162,89,255,.15);  box-shadow: 0 0 24px var(--accent-glow); }
     .safety-icon.teal  { background: rgba(0,229,255,.10);   box-shadow: 0 0 24px rgba(0,229,255,.2); }
 
     .safety-card h3 {
       font-family: var(--ff-display);
-      font-size: 1.1rem;
+      font-size: 20px;
       font-weight: 700;
       margin-bottom: 10px;
       position: relative; z-index: 1;
@@ -858,7 +870,9 @@
        RESPONSIVE
     ============================================================ */
     @media (max-width: 600px) {
-      .logo-text p { display: none; }
+      .header-inner { grid-template-columns: auto auto; }
+      .header-center-text { grid-column: 1 / -1; order: 3; margin-top: 4px; font-size: .76rem; }
+      .logo-text p { font-size: .58rem; max-width: 215px; }
       .hero { min-height: 85vh; padding: 60px 20px 50px; }
       .hero h2 { letter-spacing: -1px; }
       .cards-grid { grid-template-columns: 1fr; }
@@ -889,9 +903,12 @@
       />
       <div class="logo-text">
         <h1 class="glow-text">AI Teacher Hub</h1>
-        <p data-i18n="header_sub">Мұғалімдерге арналған ЖИ каталогы</p>
+        <p data-i18n="school_name">«И.Құтпанұлы атындағы Жібек жолы кентінің
+жалпы орта білім беретін мектебі» КММ</p>
       </div>
     </div>
+
+    <div class="header-center-text" data-i18n="header_sub"></div>
 
     <!-- LANGUAGE SWITCHER -->
     <div class="lang-switcher" role="group" aria-label="Language">
@@ -910,8 +927,8 @@
   <div class="hero-badge" data-i18n="hero_badge">🚀 Мұғалімдер үшін жасалған</div>
 
   <h2>
-    <span class="glow-text" data-i18n="hero_h1">Жасанды Интеллект —</span><br>
-    <span data-i18n="hero_h2">Мұғалімнің көмекшісі</span>
+    <span class="glow-text" data-i18n="hero_h1">Мұғалімдерге арналған —</span><br>
+    <span data-i18n="hero_h2">ЖИ каталогы</span>
   </h2>
 
   <p class="hero-sub" data-i18n="hero_sub">
@@ -1009,7 +1026,8 @@
 <footer>
   <div class="container">
     <div class="footer-logo glow-text">AI Teacher Hub</div>
-    <p data-i18n="footer_copy">© 2024 — Барлық мұғалімдерге арналған</p>
+    <p data-i18n="footer_copy">© 2025 — Барлық мұғалімдерге арналған</p>
+    <p data-i18n="footer_author">Автор сайта: Елеуова Айгерим Тениззбаевна — директордың бейіндік ісі жөніндегі орынбасары</p>
     <div class="footer-links">
       <a href="#hero"   data-i18n="footer_home">Басты бет</a>
       <a href="#tools"  data-i18n="footer_tools">Құралдар</a>
@@ -1032,10 +1050,11 @@
 ============================================================== */
 const translations = {
   kz: {
-    header_sub:      "Мұғалімдерге арналған ЖИ каталогы",
+    header_sub:      "",
+    school_name:     "«И.Құтпанұлы атындағы Жібек жолы кентінің\nжалпы орта білім беретін мектебі» КММ",
     hero_badge:      "🚀 Мұғалімдер үшін жасалған",
-    hero_h1:         "Жасанды Интеллект —",
-    hero_h2:         "Мұғалімнің көмекшісі",
+    hero_h1:         "Мұғалімдерге арналған —",
+    hero_h2:         "ЖИ каталогы",
     hero_sub:        "Сабақты жоспарлаңыз, тапсырмалар жасаңыз және оқушыларды шабыттандырыңыз — ЖИ құралдарымен.",
     hero_btn:        "Бастау",
     scroll_hint:     "Төмен қараңыз",
@@ -1055,7 +1074,8 @@ const translations = {
     toast_copied:    "Промпт көшірілді!",
     safety_title:    "🛡️ Қауіпсіздік ережелері",
     safety_sub:      "ЖИ-ді дұрыс қолданыңыз",
-    footer_copy:     "© 2024 — Барлық мұғалімдерге арналған",
+    footer_copy:     "© 2025 — Барлық мұғалімдерге арналған",
+    footer_author:   "Автор сайта: Елеуова Айгерим Тениззбаевна — директордың бейіндік ісі жөніндегі орынбасары",
     footer_home:     "Басты бет",
     footer_tools:    "Құралдар",
     footer_prompts:  "Промпттар",
@@ -1063,10 +1083,11 @@ const translations = {
     // Safety card titles and descriptions (also edit safetyCards below)
   },
   ru: {
-    header_sub:      "Каталог ИИ-инструментов для учителей",
+    header_sub:      "",
+    school_name:     "КГУ «Общеобразовательная школа поселка Жибек жолы\nимени И. Кутпанулы»",
     hero_badge:      "🚀 Создано для учителей",
-    hero_h1:         "Искусственный Интеллект —",
-    hero_h2:         "Помощник учителя",
+    hero_h1:         "Каталог ИИ —",
+    hero_h2:         "инструментов для учителей",
     hero_sub:        "Планируйте уроки, создавайте задания и вдохновляйте учеников — с помощью ИИ-инструментов.",
     hero_btn:        "Начать",
     scroll_hint:     "Прокрутите вниз",
@@ -1086,17 +1107,19 @@ const translations = {
     toast_copied:    "Промпт скопирован!",
     safety_title:    "🛡️ Правила безопасности",
     safety_sub:      "Используйте ИИ правильно",
-    footer_copy:     "© 2024 — Для всех учителей",
+    footer_copy:     "© 2025 — Для всех учителей",
+    footer_author:   "Автор сайта: Елеуова Айгерим Тениззбаевна — заместитель директора по профильной работе",
     footer_home:     "Главная",
     footer_tools:    "Инструменты",
     footer_prompts:  "Промпты",
     footer_safety:   "Безопасность",
   },
   en: {
-    header_sub:      "AI Tools Catalog for Teachers",
+    header_sub:      "",
+    school_name:     "Municipal State Institution “General Secondary School of Zhibek Zholy settlement\nnamed after I. Kutpanuly”",
     hero_badge:      "🚀 Built for Teachers",
-    hero_h1:         "Artificial Intelligence —",
-    hero_h2:         "Your Teaching Assistant",
+    hero_h1:         "AI Tools —",
+    hero_h2:         "Catalog for Teachers",
     hero_sub:        "Plan lessons, create assignments and inspire students — powered by AI tools.",
     hero_btn:        "Get Started",
     scroll_hint:     "Scroll down",
@@ -1116,7 +1139,8 @@ const translations = {
     toast_copied:    "Prompt copied!",
     safety_title:    "🛡️ Safety Guidelines",
     safety_sub:      "Use AI responsibly",
-    footer_copy:     "© 2024 — For All Teachers",
+    footer_copy:     "© 2025 — For All Teachers",
+    footer_author:   "Website author: Aigerim Tenyzzbaevna Eleuova — Deputy Director for Specialized Work",
     footer_home:     "Home",
     footer_tools:    "Tools",
     footer_prompts:  "Prompts",
@@ -1149,23 +1173,6 @@ const aiTools = [
     category: "lesson",
     youtubeEmbed: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
   },
-   {
-    name: "8888",
-    logo: "https://img.icons8.com/fluency/96/chatgpt.png",
-    desc: {
-      kz: "Сабақ жоспарлауға арналған ең танымал ЖИ",
-      ru: "Самый популярный ИИ для планирования уроков",
-      en: "Most popular AI for lesson planning"
-    },
-    longDesc: {
-      kz: "Кез келген тақырып бойынша сабақ жоспары, тест, тапсырмалар жасайды",
-      ru: "Создаёт планы уроков, тесты и задания по любой теме",
-      en: "Creates lesson plans, tests and tasks on any topic"
-    },
-    url: "https://chat.openai.com",
-    category: "lesson",
-    youtubeEmbed: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
-  },
   {
     name: "MagicSchool AI",
     logo: "https://img.icons8.com/fluency/96/wizard.png",
@@ -1181,7 +1188,7 @@ const aiTools = [
     },
     url: "https://www.magicschool.ai",
     category: "lesson",
-    youtubeEmbed: "https://youtu.be/CJuZ6OA4AhA?list=RDk4xwmkOvIPI"
+    youtubeEmbed: "https://www.youtube.com/embed/ysz5S6PUM-U?rel=0&modestbranding=1"
   },
   // --- Тапсырмалар (Assignments) ---
   {
@@ -1295,6 +1302,14 @@ const promptsData = [
   },
   {
     title: { kz: "Ата-аналарға хат", ru: "Письмо родителям", en: "Parent Letter" },
+    text: {
+      kz: "Ата-аналарға мектепте ЖИ-ді оқу мақсатында қолданатынымыз туралы хат жаз. Достық, кәсіби тонда болсын. 3 абзацтан тұрсын.",
+      ru: "Напиши письмо родителям о том, что в школе используют ИИ в учебных целях. Дружелюбный и профессиональный тон. 3 абзаца.",
+      en: "Write a parent letter explaining that the school uses AI for educational purposes. Friendly and professional tone. 3 paragraphs."
+    }
+  },
+  {
+    title: { kz: "TEST", ru: "Письмо родителям", en: "Parent Letter" },
     text: {
       kz: "Ата-аналарға мектепте ЖИ-ді оқу мақсатында қолданатынымыз туралы хат жаз. Достық, кәсіби тонда болсын. 3 абзацтан тұрсын.",
       ru: "Напиши письмо родителям о том, что в школе используют ИИ в учебных целях. Дружелюбный и профессиональный тон. 3 абзаца.",
@@ -1707,7 +1722,7 @@ function observeReveal() {
   let W, H, particles;
   const PARTICLE_COUNT = 70;
   const MAX_DIST = 160;
-  const COLORS = ['#4f8ef7', '#a259ff', '#00e5ff'];
+  const COLORS = ['#2f8cff', '#a259ff', '#00e5ff'];
 
   function resize() {
     W = canvas.width  = window.innerWidth;
