@@ -1528,24 +1528,54 @@ function normalizeYoutubeUrl(rawUrl) {
 function setupDesktopCardHover(card) {
   const upperZoneRatio = 0.6; // only top 60% flips card
   const videoEl = card.querySelector('.card-video-wrap');
+  let flipLocked = false;
+
+  function setFlipped(state) {
+    card.classList.toggle('is-flipped', state);
+  }
 
   card.addEventListener('mousemove', (e) => {
+    if (flipLocked) return;
+
     const rect = card.getBoundingClientRect();
     const cursorY = e.clientY - rect.top;
     const inUpperZone = cursorY <= rect.height * upperZoneRatio;
     const hoveringVideo = videoEl ? videoEl.matches(':hover') : false;
-    card.classList.toggle('is-flipped', inUpperZone && !hoveringVideo);
+
+    if (hoveringVideo) {
+      setFlipped(false);
+      return;
+    }
+
+    if (inUpperZone) {
+      // Lock flipped state so user can click back-side button.
+      setFlipped(true);
+      flipLocked = true;
+      return;
+    }
+
+    setFlipped(false);
   });
 
   card.addEventListener('mouseleave', () => {
-    card.classList.remove('is-flipped');
+    flipLocked = false;
+    setFlipped(false);
   });
 
   if (videoEl) {
     videoEl.addEventListener('mouseenter', () => {
-      card.classList.remove('is-flipped');
+      flipLocked = false;
+      setFlipped(false);
     });
   }
+
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-go')) return;
+    if (card.classList.contains('is-flipped')) {
+      flipLocked = false;
+      setFlipped(false);
+    }
+  });
 }
 
 /* ==============================================================
